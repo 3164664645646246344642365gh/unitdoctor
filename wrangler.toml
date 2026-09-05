@@ -1,12 +1,11 @@
-# UnitDoctor (unitdoctor.online) — Cloudflare Workers 静态资产部署配置
-# 本地部署：npm i -g wrangler && wrangler deploy
-# 自动部署：push 到 GitHub main 分支 → Actions 先跑测试 → 全绿才 wrangler deploy（见 .github/workflows/deploy.yml）
-# 绑定域名：Cloudflare Dashboard → Workers → unitdoctor → Domains → unitdoctor.online
+# UnitDoctor — Cloudflare Workers static-assets deployment config.
+# Deploy: `npx wrangler deploy` (CI does this automatically on every green push to main).
+# Custom domain: Cloudflare Dashboard -> Workers & Pages -> unitdoctor -> Domains -> unitdoctor.online
 
 name = "unitdoctor"
 compatibility_date = "2026-09-01"
 
 [assets]
 directory = "./"
-# 纯静态站：index.html 为入口，全部逻辑 client-side，无 Worker 脚本
+# Pure static site: index.html is the entry, all logic is client-side, no Worker script.
 not_found_handling = "404-page"
