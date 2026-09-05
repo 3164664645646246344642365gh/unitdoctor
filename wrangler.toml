@@ -5,6 +5,10 @@
 name = "unitdoctor"
 compatibility_date = "2026-09-01"
 
+# Expose the temporary workers.dev URL (unitdoctor.<account-subdomain>.workers.dev)
+# until the custom domain unitdoctor.online is delegated and bound.
+workers_dev = true
+
 [assets]
 directory = "./"
 # Pure static site: index.html is the entry, all logic is client-side, no Worker script.
