@@ -1,0 +1,40 @@
+# UnitDoctor — 自动测试 + 自动部署（低监管链路）
+# 规则：任何 push 到 main → 先跑两套测试引擎（149 条断言）→ 全绿才允许 wrangler deploy。
+# 测试不过 = 不部署 = 线上站点保持上一个可用版本。
+# 需要在 GitHub 仓库 Settings → Secrets and variables → Actions 里配置一次：
+#   CLOUDFLARE_API_TOKEN  — Cloudflare API Token（权限：Account: Workers Scripts Edit + Zone: DNS Edit）
+#   CLOUDFLARE_ACCOUNT_ID — Cloudflare 账户 ID（Dashboard 右侧栏可复制）
+
+name: test and deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  test-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Run engine tests (commit tools)
+        run: node test_engine.js
+
+      - name: Run engine tests (systemd tools)
+        run: node test_systemd.js
+
+      - name: Syntax-check all page scripts
+        run: |
+          for f in assets/*.js; do node --check "$f"; done
+
+      - name: Deploy to Cloudflare Workers (only if all tests green)
+        if: ${{ secrets.CLOUDFLARE_API_TOKEN != '' && secrets.CLOUDFLARE_ACCOUNT_ID != '' }}
+        run: npx wrangler deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

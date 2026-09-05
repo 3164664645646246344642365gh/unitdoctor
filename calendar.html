@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en" translate="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google" content="notranslate">
+<title>Systemd OnCalendar Editor — Preview the Next Run Times — UnitDoctor</title>
+<meta name="description" content="Free systemd OnCalendar expression editor. Type or pick a schedule, see it normalized, see the next five times it actually fires in your timezone, and get the cron equivalent. The crontab.guru experience for systemd timers. 100% in your browser.">
+<link rel="canonical" href="https://unitdoctor.online/calendar.html">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231c1917'/%3E%3Ctext x='16' y='22' font-family='monospace' font-size='16' fill='%234ade80' text-anchor='middle'%3E%E2%9C%93%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="wordmark" href="/">unit<span class="mark">doctor</span><span class="tld">.online</span></a>
+    <nav>
+      <a href="/">commit</a>
+      <a href="/lint.html">lint</a>
+      <a href="/squash.html">squash</a>
+      <a href="/changelog.html">changelog</a>
+      <a href="/unit.html">unit</a>
+      <a href="/timer.html">cron</a>
+      <a href="/doctor.html">checker</a>
+      <a href="/calendar.html" class="is-active">OnCalendar</a>
+      <a href="/resources.html">resources</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero wrap">
+    <p class="micro-label">free · no signup · 100% local</p>
+    <h1>When does it <em>actually</em> run?</h1>
+    <p class="sub">You wrote <code>Mon..Fri *-*-* 09:00</code> and you're 90% sure it means
+    "weekdays at nine". The last 10% is what wakes you up. This is crontab.guru for systemd:
+    type or pick an expression, watch it normalize, and see the next five fire times — right
+    there, in your timezone, no server round-trip.</p>
+    <p class="trust-row"><span>0 uploads</span><span>0 accounts</span><span>0 cookies</span></p>
+  </section>
+
+  <section class="wrap wrap-wide">
+    <div class="tool-card" id="tool">
+      <div class="tool-topbar">
+        <div class="tool-tabs" role="tablist">
+          <span class="tab is-active"><span class="tab-en">OnCalendar editor</span></span>
+        </div>
+        <span class="engine-tag">engine v3.0 · 100% local</span>
+      </div>
+
+      <div class="chip-row">
+        <button class="spec-chip" data-spec="minutely">minutely</button>
+        <button class="spec-chip" data-spec="hourly">hourly</button>
+        <button class="spec-chip" data-spec="daily">daily</button>
+        <button class="spec-chip" data-spec="weekly">weekly</button>
+        <button class="spec-chip" data-spec="monthly">monthly</button>
+        <button class="spec-chip" data-spec="Mon..Fri *-*-* 09:00:00">weekdays 9 AM</button>
+        <button class="spec-chip" data-spec="*:0/15">every 15 min</button>
+        <button class="spec-chip" data-spec="*-*-01 04:30:00">1st of month, 4:30</button>
+        <button class="spec-chip" data-spec="Sat,Sun *-*-* 12:00:00">weekends noon</button>
+      </div>
+
+      <input type="text" id="expr" class="input" rows="1" spellcheck="false" style="margin-top:12px"
+        value="Mon..Fri *-*-* 09:00:00"
+        placeholder="Mon..Fri *-*-* 09:00:00   ·   daily   ·   *:0/15">
+
+      <div class="tool-meta">
+        <span class="hint">[Weekday] Year-Month-Day Hour:Minute:Second · presets like <code>daily</code> work · updates as you type</span>
+      </div>
+
+      <p class="error" id="error" hidden></p>
+
+      <div class="results" id="results" hidden>
+        <div class="ud-out-head">
+          <span class="ud-file-label">canonical form</span>
+          <button class="btn-ghost" id="copy-cal">Copy</button>
+        </div>
+        <pre class="rec-msg" id="out-cal"></pre>
+
+        <div class="ud-out-head">
+          <span class="ud-file-label">next 5 fire times (your browser's timezone)</span>
+        </div>
+        <ul class="fires" id="fires"></ul>
+
+        <div class="ud-out-head">
+          <span class="ud-file-label">equivalent crontab line</span>
+          <button class="btn-ghost" id="copy-cron">Copy</button>
+        </div>
+        <pre class="rec-msg" id="out-cron"></pre>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap how">
+    <h2>Reading an OnCalendar spec</h2>
+    <ol class="plain-steps">
+      <li><strong>Three (or two) parts.</strong> <code>Weekday Year-Month-Day Hour:Minute:Second</code>.
+      The weekday comes <em>first</em> — that's the part cron habits get wrong. Leave any part out
+      and it means "any".</li>
+      <li><strong>Ranges and steps.</strong> <code>Mon..Fri</code> is a range,
+      <code>09,12,18</code> is a list, <code>*:0/15</code> is "starting at :00, every 15 minutes".
+      Two dots for ranges — not the cron hyphen (both are accepted, but two dots are canonical).</li>
+      <li><strong>Presets.</strong> <code>minutely hourly daily monthly weekly yearly</code> (and
+      <code>quarterly</code>, <code>semiannually</code>) expand to the full form — the canonical
+      output shows exactly what each one means.</li>
+      <li><strong>Verify on the box.</strong> <code>systemd-analyze calendar 'EXPRESSION'</code>
+      is the final authority and prints the same kind of list you see here.</li>
+    </ol>
+  </section>
+
+  <section class="wrap faq">
+    <h2>Quick questions</h2>
+    <details>
+      <summary>Which timezone does the preview use?</summary>
+      <p>Your browser's. systemd uses the server's local timezone unless you add
+      <code>Timezone=</code> to the [Timer] section or write a UTC suffix on the expression —
+      if your server runs UTC and you don't, that's the classic 8-hour surprise.</p>
+    </details>
+    <details>
+      <summary>Why does the canonical form differ from what I typed?</summary>
+      <p>The parser normalizes: presets expand, "9:0" becomes "09:00", cron-style
+      <code>1-5</code> ranges become <code>1..5</code>. Same meaning, canonical spelling — paste
+      the canonical form into your .timer file.</p>
+    </details>
+    <details>
+      <summary>Is this crontab.guru?</summary>
+      <p>It's the OnCalendar counterpart. crontab.guru is excellent for cron's 5 fields; systemd
+      timers have a different grammar, and this editor speaks it natively — presets, ranges,
+      seconds and all.</p>
+    </details>
+  </section>
+
+  <section class="wrap tool-grid-section">
+    <h2>Other systemd jobs</h2>
+    <div class="tool-grid">
+      <a class="tool-tile" href="/unit.html">
+        <span class="tile-cmd">.service generator</span>
+        <span class="tile-desc">Form in, correct unit file + install commands out.</span>
+        <span class="tile-go">Generate a unit →</span>
+      </a>
+      <a class="tool-tile" href="/timer.html">
+        <span class="tile-cmd">cron → timer converter</span>
+        <span class="tile-desc">Old crontab line in, OnCalendar + .timer out.</span>
+        <span class="tile-go">Convert a crontab →</span>
+      </a>
+      <a class="tool-tile" href="/doctor.html">
+        <span class="tile-cmd">unit checker</span>
+        <span class="tile-desc">Paste a unit, get line-numbered findings and fixes.</span>
+        <span class="tile-go">Check a unit →</span>
+      </a>
+      <a class="tool-tile" href="/resources.html">
+        <span class="tile-cmd">resources</span>
+        <span class="tile-desc">The specs, rescues and free tiers we actually use.</span>
+        <span class="tile-go">Browse the shelf →</span>
+      </a>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p>unitdoctor.online — a static page that respects your server. No cookies, no analytics on your input.</p>
+    <p><a href="/privacy.html">privacy</a> · <a href="/terms.html">terms</a> · <a href="/history.html">version history</a></p>
+    <p class="colophon">Handmade HTML/CSS/JS — no framework, no build step · hosted on Cloudflare Workers · last updated 2026-09-05</p>
+  </div>
+</footer>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="assets/ud-stats.js"></script>
+<script src="assets/calendar.js"></script>
+<script src="assets/systemd-ui.js"></script>
+<script>
+(function () {
+  "use strict";
+  var $ = UD.$;
+
+  function relative(d) {
+    var ms = d.getTime() - Date.now();
+    if (ms < 0) return "";
+    var mins = Math.round(ms / 60000);
+    if (mins < 1) return "in <1 min";
+    if (mins < 60) return "in " + mins + " min";
+    var hrs = Math.floor(mins / 60);
+    if (hrs < 24) return "in " + hrs + " h " + (mins % 60) + " min";
+    return "in " + Math.floor(hrs / 24) + " d";
+  }
+
+  function render() {
+    var expr = $("expr").value.trim();
+    var errEl = $("error"), resEl = $("results");
+    if (!expr) { errEl.hidden = true; resEl.hidden = true; return; }
+    var p = Cal.parse(expr);
+    if (!p.ok) {
+      errEl.textContent = p.errors[0];
+      errEl.hidden = false;
+      resEl.hidden = true;
+      return;
+    }
+    errEl.hidden = true;
+
+    var canonical = Cal.format(p);
+    $("out-cal").textContent = canonical;
+
+    var runs = Cal.nextRuns(p, 5, new Date());
+    var ul = $("fires");
+    ul.innerHTML = "";
+    runs.forEach(function (d) {
+      var li = document.createElement("li");
+      li.innerHTML = "<span>" + UD.esc(UD.fmtDate(d)) + "</span><span class='rel'>" +
+        UD.esc(relative(d)) + "</span>";
+      ul.appendChild(li);
+    });
+
+    var c = Cal.calendarToCron(expr);
+    $("out-cron").textContent = c.ok ? c.cron : "(no cron equivalent)";
+    if (c.ok && c.warnings.length) {
+      $("out-cron").textContent += "\n# " + c.warnings[0];
+    }
+
+    resEl.hidden = false;
+    resEl.dataset.cal = canonical;
+    resEl.dataset.cron = c.ok ? c.cron : "";
+  }
+
+  UD.live(render, "expr");
+
+  $("copy-cal").addEventListener("click", function () {
+    UD.copyText($("results").dataset.cal || "", "canonical form copied");
+  });
+  $("copy-cron").addEventListener("click", function () {
+    UD.copyText($("results").dataset.cron || "", "cron line copied");
+  });
+
+  Array.prototype.forEach.call(document.querySelectorAll(".spec-chip"), function (btn) {
+    btn.addEventListener("click", function () {
+      $("expr").value = btn.dataset.spec;
+      render();
+    });
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

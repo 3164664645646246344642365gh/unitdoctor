@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en" translate="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google" content="notranslate">
+<title>Version History — UnitDoctor</title>
+<meta name="description" content="What changed on unitdoctor.online, version by version. A hand-made tool, updated by hand — bugs included.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231c1917'/%3E%3Ctext x='16' y='22' font-family='monospace' font-size='16' fill='%234ade80' text-anchor='middle'%3E%E2%9C%93%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="wordmark" href="/">unit<span class="mark">doctor</span><span class="tld">.online</span></a>
+    <nav>
+      <a href="/">commit</a>
+      <a href="/lint.html">lint</a>
+      <a href="/squash.html">squash</a>
+      <a href="/changelog.html">changelog</a>
+      <a href="/unit.html">unit</a>
+      <a href="/timer.html">cron</a>
+      <a href="/doctor.html">checker</a>
+      <a href="/calendar.html">OnCalendar</a>
+      <a href="/resources.html">resources</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page wrap">
+  <p class="micro-label">version by version · bugs included</p>
+  <h1>Version history</h1>
+  <p class="lede">A hand-made tool, updated by hand. When something breaks, it goes on this page.
+  Newest first. (The <a href="/changelog.html">changelog generator</a> is a tool — this page is
+  just the site's own diary.)</p>
+
+  <h2>v3.0 — 2026-09-05 <span style="font-family:var(--mono);font-size:13px;color:var(--stamp);">the systemd toolbox release</span></h2>
+  <h3 style="font-size:16px;margin:8px 0 4px;">Added</h3>
+  <ul>
+    <li>Four systemd tools, one shared parsing engine: a <a href="/unit.html">.service generator</a>
+    (with a status=203/EXEC guardrail), a two-way <a href="/timer.html">cron ↔ timer converter</a>
+    that warns when the grammars genuinely disagree, a line-numbered <a href="/doctor.html">unit
+    checker</a>, and an <a href="/calendar.html">OnCalendar editor</a> that previews the next five
+    fire times.</li>
+    <li>The engine ships with its own test suite (84 checks) and the site deploys through GitHub —
+    tests run before anything goes live.</li>
+  </ul>
+  <h3 style="font-size:16px;margin:8px 0 4px;">Changed</h3>
+  <ul>
+    <li>The homepage is a toolbox now: unit tools join the commit four, one page each,
+    nothing uploaded — the site grew from "one knife" to "one shelf".</li>
+  </ul>
+
+  <h2>v2.5 — 2026-09-05 <span style="font-family:var(--mono);font-size:13px;color:var(--stamp);">the "one page, one job" release</span></h2>
+  <h3 style="font-size:16px;margin:8px 0 4px;">Changed</h3>
+  <ul>
+    <li>The homepage does one thing now: generate commit messages. Squash, changelog and lint
+    moved to their own pages — same engine, one job per page, easier to link to.</li>
+    <li>A resources shelf appeared in the nav. It's the list of specs and free tools we actually
+    use while building this site.</li>
+  </ul>
+  <h3 style="font-size:16px;margin:8px 0 4px;">Unchanged</h3>
+  <ul>
+    <li>The engine, the tests, and the promise: nothing leaves your tab.</li>
+  </ul>
+
+  <h2>v2.4 — 2026-09-05 <span style="font-family:var(--mono);font-size:13px;color:var(--stamp);">the "usable by the person who built it" release</span></h2>
+  <h3 style="font-size:16px;margin:8px 0 4px;">Added</h3>
+  <ul>
+    <li><strong>Machine-translation shield.</strong> The UI is now <code>translate="no"</code>.
+    Browser auto-translate had been renaming "Squash" to the sport and "Lint" to fabric
+    fuzz. No third machine in the loop.</li>
+    <li>Wider desktop layout (1000/1180px). The old 880px reading measure made the tool feel
+    like a bookmarklet on a real monitor.</li>
+  </ul>
+
+  <h2>v2.3 — 2026-09-05 <span style="font-family:var(--mono);font-size:13px;color:var(--stamp);">the "where would I actually use this" release</span></h2>
+  <h3 style="font-size:16px;margin:8px 0 4px;">Added</h3>
+  <ul>
+    <li><strong>Squash &amp; PR titles.</strong> Paste <code>git log --oneline</code> from a feature
+    branch, get one title that leads with the dominant type, plus a ready body listing every commit
+    — for the squash box on GitHub's web UI.</li>
+    <li><strong>Changelog drafts.</strong> Same log in, grouped markdown out — Features, Bug Fixes,
+    Performance, the lot. A first line like <code>v1.4.0</code> becomes the header, breaking changes
+    get the ⚠️.</li>
+    <li><strong>Commit lint.</strong> Paste one message, get its spec violations listed — past
+    tense, capital start, trailing period, the usual suspects — with a corrected version to copy.</li>
+  </ul>
+  <h3 style="font-size:16px;margin:8px 0 4px;">The honest part</h3>
+  <p>All three exist because someone asked the only question that matters: <em>"I really don't know
+  where this simple thing would be useful?"</em> Fair. The diff box was never the whole job —
+  squash merges, changelogs and reviews were always the other half of it.</p>
+
+  <h2>v2.2 — 2026-09-05 <span style="font-family:var(--mono);font-size:13px;color:var(--stamp);">the alignment incident</span></h2>
+  <h3 style="font-size:16px;margin:8px 0 4px;">Fixed</h3>
+  <ul>
+    <li>The FAQ and history sections had drifted to the left edge of the page. Cause: a CSS margin
+    shorthand quietly overwriting the auto-centering it shared with the layout wrapper. It looked
+    intentional for a while. It was not.</li>
+  </ul>
+  <h3 style="font-size:16px;margin:8px 0 4px;">Changed</h3>
+  <ul>
+    <li>Output redesigned as a dark terminal panel with the format switch inside it — easier to
+    find, harder to mistake for decoration.</li>
+  </ul>
+
+  <h2>v2.1 — 2026-09-05 <span style="font-family:var(--mono);font-size:13px;color:var(--stamp);">rules that actually read the diff</span></h2>
+  <h3 style="font-size:16px;margin:8px 0 4px;">Added</h3>
+  <ul>
+    <li>Signal mining: error messages thrown in the diff become subjects; new guards, new exports,
+    lockfile bumps and deletions each steer the type.</li>
+    <li>Three variants per generation, each with a one-line <em>why</em>.</li>
+  </ul>
+
+  <h2>v2.0 — 2026-09-02 <span style="font-family:var(--mono);font-size:13px;color:var(--stamp);">the rewrite</span></h2>
+  <h3 style="font-size:16px;margin:8px 0 4px;">Added</h3>
+  <ul>
+    <li>Style learner: paste <code>git log --pretty=format:%s -20</code> and the generator picks up
+    your types, scope habits, median length and emoji use. Stored in your browser, wiped with one
+    click.</li>
+  </ul>
+  <h3 style="font-size:16px;margin:8px 0 4px;">Unchanged</h3>
+  <ul>
+    <li>Nothing leaves the tab. That part was right the first time.</li>
+  </ul>
+
+  <h2>v1.0 — 2026-09-02 <span style="font-family:var(--mono);font-size:13px;color:var(--stamp);">first commit</span></h2>
+  <ul>
+    <li>One box, one output. It worked. It was a little generic, and it knew it — which is why
+    v2 exists.</li>
+  </ul>
+
+  <p style="margin-top:36px;"><a href="/">← back to the generator</a></p>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p>unitdoctor.online — a static page that respects your code.</p>
+    <p><a href="/privacy.html">privacy</a> · <a href="/terms.html">terms</a> · <a href="/">generator</a></p>
+  </div>
+</footer>
+
+</body>
+</html>

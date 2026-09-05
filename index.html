@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en" translate="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google" content="notranslate">
+<title>UnitDoctor — Free Developer Tools That Run 100% in Your Browser</title>
+<meta name="description" content="A growing toolbox of free developer tools: systemd unit file generator, OnCalendar editor, unit file checker, cron↔systemd timer converter, commit message generator, commit linter, squash &amp; PR titles, changelog drafts. No AI, no account, nothing uploaded — every tool is plain JavaScript running in your tab.">
+<link rel="canonical" href="https://unitdoctor.online/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231c1917'/%3E%3Ctext x='16' y='22' font-family='monospace' font-size='16' fill='%234ade80' text-anchor='middle'%3E%E2%9C%93%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="wordmark" href="/">unit<span class="mark">doctor</span><span class="tld">.online</span></a>
+    <nav>
+      <a href="/" class="is-active">commit</a>
+      <a href="/lint.html">lint</a>
+      <a href="/squash.html">squash</a>
+      <a href="/changelog.html">changelog</a>
+      <a href="/unit.html">unit</a>
+      <a href="/timer.html">cron</a>
+      <a href="/doctor.html">checker</a>
+      <a href="/calendar.html">OnCalendar</a>
+      <a href="/resources.html">resources</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <!-- ============ HERO ============ -->
+  <section class="hero wrap">
+    <p class="micro-label">free · no signup · est. 2026</p>
+    <h1>Paste. Fix. Ship.</h1>
+    <p class="h1-sub">Free, instant tools for git commits and systemd units — nothing ever leaves this tab.</p>
+    <div class="stats-row">
+      <span class="stat"><b data-ud-runs>0</b> runs on this device</span>
+      <span class="stat">online since Sep 5, 2026 · day <b data-ud-day>1</b></span>
+      <span class="stat">new tools added regularly</span>
+    </div>
+    <p class="trust-row"><span>0 uploads</span><span>0 AI calls</span><span>0 cookies</span><span>view source, that's the whole app</span></p>
+  </section>
+
+  <!-- ============ TOOL GRID ============ -->
+  <section class="wrap tool-grid-section" id="tools">
+    <h2>The toolbox</h2>
+    <div class="tool-grid">
+      <a class="tool-tile tile-accent" href="/unit.html">
+        <span class="tile-cmd">systemd unit generator</span>
+        <span class="tile-desc">Describe a service in plain fields — command, user, restart policy — get a correct <code>.service</code> file plus the exact <code>systemctl</code> commands to install it. No more status=203/EXEC surprises.</span>
+        <span class="tile-go">Generate a unit file →</span>
+      </a>
+      <a class="tool-tile tile-accent" href="/calendar.html">
+        <span class="tile-cmd">OnCalendar editor</span>
+        <span class="tile-desc">Type a <code>OnCalendar=</code> spec, see it parsed and the next 5 times it will fire — before you learn about it from a timer that didn't run.</span>
+        <span class="tile-go">Check a schedule →</span>
+      </a>
+      <a class="tool-tile tile-accent" href="/doctor.html">
+        <span class="tile-cmd">unit file checker</span>
+        <span class="tile-desc">Paste any <code>.service</code>/<code>.timer</code> file. Get the bugs a failed boot won't explain: relative ExecStart, bad Restart values, jurnal typos, missing [Install].</span>
+        <span class="tile-go">Check my unit file →</span>
+      </a>
+      <a class="tool-tile tile-accent" href="/timer.html">
+        <span class="tile-cmd">cron ↔ systemd timer</span>
+        <span class="tile-desc">Convert a crontab line to <code>OnCalendar=</code> — or back. Warns where the two grammars actually disagree, so a converted schedule doesn't silently change meaning.</span>
+        <span class="tile-go">Convert a schedule →</span>
+      </a>
+      <a class="tool-tile" href="/#tool">
+        <span class="tile-cmd">commit message generator</span>
+        <span class="tile-desc">Paste a diff or one sentence, get a conventional commit message — typed, scoped and phrased by rules, with three variants and the why shown.</span>
+        <span class="tile-go">Write my commit →</span>
+      </a>
+      <a class="tool-tile" href="/lint.html">
+        <span class="tile-cmd">commit linter</span>
+        <span class="tile-desc">Paste a message before you push. Spec violations listed — past tense, capital start, trailing period — with a corrected version to copy.</span>
+        <span class="tile-go">Check a message →</span>
+      </a>
+      <a class="tool-tile" href="/squash.html">
+        <span class="tile-cmd">squash &amp; PR titles</span>
+        <span class="tile-desc">Paste <code>git log --oneline</code> from the branch, get one title that leads with the dominant type — for GitHub's squash box, where you have no terminal helpers.</span>
+        <span class="tile-go">Title a branch →</span>
+      </a>
+      <a class="tool-tile" href="/changelog.html">
+        <span class="tile-cmd">changelog drafts</span>
+        <span class="tile-desc">Same log in, grouped <code>CHANGELOG.md</code> out — Features, Bug Fixes, Performance. A first line like <code>v1.4.0</code> becomes the header.</span>
+        <span class="tile-go">Draft a changelog →</span>
+      </a>
+      <a class="tool-tile" href="/resources.html">
+        <span class="tile-cmd">developer freebies</span>
+        <span class="tile-desc">A hand-picked shelf of specs, references and free-tier tools worth bookmarking — the same list we use while building this site.</span>
+        <span class="tile-go">Browse the shelf →</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ============ FLAGSHIP TOOL: COMMIT GENERATOR ============ -->
+  <section class="wrap wrap-wide">
+    <div class="tool-card" id="tool">
+      <div class="tool-topbar">
+        <div class="tool-tabs" role="tablist">
+          <button class="tab is-active" data-mode="diff" role="tab"><span class="tab-en">From a diff</span></button>
+          <button class="tab" data-mode="text" role="tab"><span class="tab-en">Describe it</span></button>
+        </div>
+        <span class="engine-tag">engine v3.0 · 100% local</span>
+      </div>
+
+      <textarea id="input" class="input" rows="9" spellcheck="false"
+        placeholder="Paste the output of `git diff --staged` here…"></textarea>
+
+      <div class="tool-meta">
+        <span id="char-count">0 chars</span>
+        <label class="check" id="breaking-wrap"><input type="checkbox" id="breaking"> breaking change</label>
+        <span class="hint" id="diff-hint">unified diff format (git diff / git show)</span>
+        <span class="sample-links">
+          try: <a href="#" id="sample-diff">a sample diff</a>
+          <a href="#" id="sample-text" hidden>a sample description</a>
+        </span>
+      </div>
+
+      <div class="actions-row">
+        <button class="btn-primary" id="generate">Generate commit message</button>
+        <span class="kbd-hint"><kbd>Ctrl</kbd> + <kbd>Enter</kbd></span>
+      </div>
+      <p class="error" id="error" hidden></p>
+
+      <div class="results" id="results" hidden>
+        <div class="analysis" id="analysis" hidden></div>
+
+        <div class="rec-block" id="rec-block" hidden>
+          <div class="rec-head">
+            <span class="micro-label" id="rec-label">recommended</span>
+            <div class="fmt-switch" id="fmt-switch" role="group" aria-label="output format">
+              <button class="fmt-btn is-active" data-fmt="conventional">conventional</button>
+              <button class="fmt-btn" data-fmt="emoji">emoji</button>
+              <button class="fmt-btn" data-fmt="simple">simple</button>
+              <button class="fmt-btn" data-fmt="detailed">detailed</button>
+            </div>
+          </div>
+          <pre class="rec-msg" id="rec-msg"></pre>
+          <div class="rec-foot">
+            <button class="btn-primary btn-copy-main" id="rec-copy">Copy to clipboard</button>
+          </div>
+        </div>
+
+        <div class="alts" id="alts" hidden></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ WHY SYSTEMD ============ -->
+  <section class="wrap how">
+    <h2>Why systemd tools?</h2>
+    <p class="sub" style="max-width:56rem">Most cron jobs graduate to systemd timers eventually — on every VPS, NAS and homelab box
+    running Linux. Yet the tooling never caught up: the grammar is terse, the error messages are
+    silent (a unit file that never fires doesn't complain — it just quietly does nothing), and the
+    few existing references are documentation, not tools. So we built the four tools we wished
+    existed: generate, edit, check, convert. The same rules engine that powers them also validates
+    every commit tool output — <a href="/history.html">137 automated assertions</a> run before
+    anything ships.</p>
+  </section>
+
+  <!-- ============ STYLE LEARNER ============ -->
+  <section class="wrap style-section">
+    <div class="style-card" id="style">
+      <div class="style-head">
+        <h2><span class="kicker">the part nobody else does</span>Teach it your style</h2>
+        <p>Paste your recent commit subjects and the generator adapts: same types, same scope
+        habits, same length, same voice. It's a set of counters, not a model — it runs here,
+        stays here, and can be wiped with one click.</p>
+      </div>
+
+      <p class="mono-hint">git log --pretty=format:%s -20</p>
+      <textarea id="style-input" class="input" rows="5" spellcheck="false"
+        placeholder="feat(auth): add login rate limit&#10;fix: handle empty token&#10;chore(deps): bump vite to 6.1&#10;…"></textarea>
+      <div class="style-actions">
+        <button class="btn-secondary" id="learn">Learn from these</button>
+        <button class="btn-ghost" id="style-clear" hidden>Forget my style</button>
+        <label class="check" id="apply-wrap" hidden><input type="checkbox" id="apply-style" checked> apply to generation</label>
+      </div>
+
+      <div class="profile" id="profile" hidden>
+        <p class="micro-label">your profile — stored in this browser only</p>
+        <div class="chips" id="profile-chips"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ HOW IT WORKS ============ -->
+  <section class="wrap how">
+    <h2>How it works</h2>
+    <ol class="plain-steps">
+      <li><strong>You paste.</strong> A unified diff from <code>git diff --staged</code>, a schedule
+      spec, or a whole unit file — whichever tool you're on.</li>
+      <li><strong>Rules read it, not a model.</strong> Grammars are implemented, not approximated:
+      the OnCalendar parser handles presets, ranges, steps and weekday lists; the unit checker walks
+      every directive against the real systemd man pages.</li>
+      <li><strong>The reasoning is shown.</strong> Warnings explain the actual failure mode
+      ("status=203/EXEC — systemd does not search PATH"), not just "invalid". You learn while
+      you fix.</li>
+      <li><strong>You copy and go.</strong> One click each. Nothing was uploaded because there was
+      nowhere to upload it to.</li>
+    </ol>
+  </section>
+
+  <!-- ============ FAQ ============ -->
+  <section class="wrap faq">
+    <h2>Questions developers actually ask</h2>
+
+    <details>
+      <summary>Is my code uploaded anywhere?</summary>
+      <p>No. This site is static files. Every tool is plain JavaScript running in your tab.
+      There is no backend endpoint that could receive your diff, your unit file, or your
+      crontab even by accident.</p>
+    </details>
+    <details>
+      <summary>Why no AI?</summary>
+      <p>Because the trade wasn't worth it. AI means your proprietary input travels to someone
+      else's server, plus quotas and API costs. A rules engine covers the daily 80% deterministically —
+      correct type, correct syntax, the actual next fire times — and shows its reasoning so you
+      learn the grammar instead of renting it. If a change is too tricky for rules, you should
+      probably write that message yourself anyway.</p>
+    </details>
+    <details>
+      <summary>What are the systemd tools exactly?</summary>
+      <p>Four: a <a href="/unit.html">unit file generator</a> (plain fields in, correct
+      <code>.service</code> out), an <a href="/calendar.html">OnCalendar editor</a> (spec in,
+      parse + next 5 fire times out), a <a href="/doctor.html">unit file checker</a> (paste any
+      unit, get the bugs with fixes), and a <a href="/timer.html">cron ↔ systemd converter</a>
+      that warns where the two grammars genuinely disagree — like dom+dow OR-vs-AND, or @reboot
+      having no OnCalendar equivalent.</p>
+    </details>
+    <details>
+      <summary>Does the commit tool replace commitlint or semantic-release?</summary>
+      <p>No — it feeds them. Output follows the Conventional Commits format those tools lint
+      and release from, so your pipeline keeps working.</p>
+    </details>
+    <details>
+      <summary>Where is my style profile and history stored?</summary>
+      <p>In this browser's localStorage, on this machine. "Forget my style" and the clear-history
+      link remove them permanently. Clearing site data does the same.</p>
+    </details>
+    <details>
+      <summary>How accurate is type detection?</summary>
+      <p>Strong on the common signals: test-only changes, lockfile bumps, migrations, docs,
+      CI config, new exported functions. Ambiguous mixed diffs default to <code>fix</code> with a
+      note — override the checkbox or edit before committing. As with any generator, read it once.</p>
+    </details>
+    <details>
+      <summary>Why a website instead of Copilot or aicommits in my editor?</summary>
+      <p>Different jobs. IDE assistants want your repo open, and many want your code on someone
+      else's server. This one earns its place in three situations: squash-merging on GitHub's web
+      UI where you have no terminal helpers; locked-down work machines where you can't install
+      anything; and learning — every output shows <em>why</em>, so the format rubs off on you.
+      It also never asks for access to anything, because there is nothing to access.</p>
+    </details>
+    <details>
+      <summary>Why three variants instead of one answer?</summary>
+      <p>Because the right message is a judgment call, and a single confident answer would be a
+      lie. Each variant reads a different signal in your input — the thrown error message, the
+      new export, the guard clause — and the why-line under each shows its reasoning. Pick one,
+      tweak it, or ignore all three. That's the honest version of help.</p>
+    </details>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p>unitdoctor.online — static pages that respect your code. No cookies, no analytics on your input.</p>
+    <p><a href="/privacy.html">privacy</a> · <a href="/terms.html">terms</a> · <a href="/cheatsheet.html">conventional commits cheat sheet</a> · <a href="/history.html">version history</a> · <button class="linklike" id="clear-history">clear history</button></p>
+    <p class="colophon">Handmade HTML/CSS/JS — no framework, no build step · hosted on Cloudflare Workers · last updated 2026-09-05</p>
+  </div>
+</footer>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="assets/ud-stats.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>

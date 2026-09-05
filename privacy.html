@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy — UnitDoctor</title>
+<meta name="description" content="UnitDoctor privacy policy: no uploads, no cookies, no analytics on your input. All processing happens in your browser.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231c1917'/%3E%3Ctext x='16' y='22' font-family='monospace' font-size='16' fill='%234ade80' text-anchor='middle'%3E%E2%9C%93%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="wordmark" href="/">unit<span class="mark">doctor</span><span class="tld">.online</span></a>
+    <nav>
+      <a href="/">commit</a>
+      <a href="/lint.html">lint</a>
+      <a href="/squash.html">squash</a>
+      <a href="/changelog.html">changelog</a>
+      <a href="/unit.html">unit</a>
+      <a href="/timer.html">cron</a>
+      <a href="/doctor.html">checker</a>
+      <a href="/calendar.html">OnCalendar</a>
+      <a href="/resources.html">resources</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page wrap">
+  <h1>Privacy</h1>
+  <p class="lede">Short version: we can't see your code, because we have nowhere to receive it.</p>
+
+  <h2>How the tool works, privacy-wise</h2>
+  <p>unitdoctor.online is a set of static files. When you paste a git diff or a description,
+  the analysis and message generation run entirely as JavaScript inside your browser tab.
+  There is no backend endpoint that accepts tool input. Your diff is not transmitted, logged,
+  or stored by us — it never leaves your machine.</p>
+
+  <h2>What is stored, and where</h2>
+  <ul>
+    <li><strong>Your style profile</strong> (if you use "Teach it your style") — saved in your
+    browser's localStorage on your device. It contains aggregated counts (type frequencies,
+    subject length, casing habits), never your actual code.</li>
+    <li><strong>Recent generations</strong> (last 20 commit messages) — also localStorage, also
+    your device. You can erase both at any time with the "Forget my style" and "clear history"
+    controls, or by clearing site data.</li>
+  </ul>
+
+  <h2>Cookies and tracking</h2>
+  <p>We set no cookies. We do not run advertising or cross-site trackers. If we later add
+  privacy-friendly aggregate analytics (such as page-view counts without any identifier),
+  it will never include tool input — and we'll note it on this page first.</p>
+
+  <h2>Third parties</h2>
+  <p>The site is served over a CDN (Cloudflare), which processes standard request metadata
+  (IP address, user agent) as any web server does, under Cloudflare's own privacy policy.
+  Nothing about the content you paste is involved, because that content is never sent.</p>
+
+  <h2>Contact</h2>
+  <p>Questions about this policy: hello@unitdoctor.online</p>
+  <p><em>Last updated: September 5, 2026</em></p>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p>unitdoctor.online — a static page that respects your code.</p>
+    <p><a href="/">generator</a> · <a href="/cheatsheet.html">cheat sheet</a> · <a href="/terms.html">terms</a></p>
+  </div>
+</footer>
+
+</body>
+</html>

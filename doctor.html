@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en" translate="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google" content="notranslate">
+<title>Systemd Unit File Checker — Find the Error Before systemd Does — UnitDoctor</title>
+<meta name="description" content="Free systemd unit file checker. Paste a .service, .timer or .socket file and get line-numbered findings: relative ExecStart paths (status=203/EXEC), invalid Restart or Type values, missing [Install] sections, OnCalendar syntax errors — each with the exact fix. 100% in your browser, nothing uploaded.">
+<link rel="canonical" href="https://unitdoctor.online/doctor.html">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231c1917'/%3E%3Ctext x='16' y='22' font-family='monospace' font-size='16' fill='%234ade80' text-anchor='middle'%3E%E2%9C%93%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="wordmark" href="/">unit<span class="mark">doctor</span><span class="tld">.online</span></a>
+    <nav>
+      <a href="/">commit</a>
+      <a href="/lint.html">lint</a>
+      <a href="/squash.html">squash</a>
+      <a href="/changelog.html">changelog</a>
+      <a href="/unit.html">unit</a>
+      <a href="/timer.html">cron</a>
+      <a href="/doctor.html" class="is-active">checker</a>
+      <a href="/calendar.html">OnCalendar</a>
+      <a href="/resources.html">resources</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero wrap">
+    <p class="micro-label">free · no signup · 100% local</p>
+    <h1>Your service won't start. <em>Here's why.</em></h1>
+    <p class="sub">A service that dies with <code>status=203/EXEC</code> or "Scheduled restart
+    job, restart counter is at..." is almost always a unit file mistake: a relative
+    <code>ExecStart</code> path, a mistyped <code>Restart=</code> value, a missing
+    <code>[Install]</code> section. Paste the file — every finding comes with a line number and
+    the exact fix, before you have to round-trip to the server.</p>
+    <p class="trust-row"><span>0 uploads</span><span>0 accounts</span><span>0 cookies</span></p>
+  </section>
+
+  <section class="wrap wrap-wide">
+    <div class="tool-card" id="tool">
+      <div class="tool-topbar">
+        <div class="tool-tabs" role="tablist">
+          <span class="tab is-active"><span class="tab-en">unit checker</span></span>
+        </div>
+        <span class="engine-tag">engine v3.0 · 100% local</span>
+      </div>
+
+      <textarea id="input" class="input" rows="12" spellcheck="false"
+        placeholder="[Unit]&#10;Description=My app&#10;&#10;[Service]&#10;ExecStart=node app.js   ← paste your unit file here&#10;..."></textarea>
+
+      <div class="tool-meta">
+        <span class="hint">static check against systemd.unit / service / timer(5) rules · nothing leaves the page</span>
+        <span class="sample-links">
+          try: <a href="#" id="ex-broken">a broken unit</a>
+          <a href="#" id="ex-service">a clean service</a>
+          <a href="#" id="ex-timer">a timer</a>
+        </span>
+      </div>
+
+      <div class="actions-row">
+        <button class="btn-primary" id="check">Check this unit</button>
+        <span class="kbd-hint"><kbd>Ctrl</kbd> + <kbd>Enter</kbd></span>
+      </div>
+      <p class="error" id="error" hidden></p>
+
+      <div class="results" id="results" hidden>
+        <div class="ud-out-head">
+          <div class="score-badge"><span class="n" id="score-n">0</span><span class="t">health</span></div>
+          <span class="ud-file-label" id="verdict"></span>
+        </div>
+        <div class="findings" id="findings"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap how">
+    <h2>What the check covers</h2>
+    <ol class="plain-steps">
+      <li><strong>Structure.</strong> Missing <code>=</code> signs, directives outside any section,
+      misspelled section headers, unknown directives (with a did-you-mean when it's a typo like
+      <code>Restar=always</code>).</li>
+      <li><strong>Execution.</strong> Relative <code>ExecStart</code> paths (the 203/EXEC
+      killer), shell syntax that systemd won't interpret, multiple ExecStart lines without
+      <code>Type=oneshot</code>, Type=forking without a PIDFile.</li>
+      <li><strong>Values.</strong> Invalid <code>Restart=</code>, <code>Type=</code>,
+      <code>KillMode=</code>, <code>StandardOutput=</code> — including the classic
+      <code>jurnal</code> typo.</li>
+      <li><strong>Schedules.</strong> <code>OnCalendar=</code> is parsed with the same engine as
+      our <a href="/calendar.html">OnCalendar editor</a>, and "every 5 min" in plain English gets
+      translated to <code>*:0/5</code>.</li>
+    </ol>
+  </section>
+
+  <section class="wrap faq">
+    <h2>Quick questions</h2>
+    <details>
+      <summary>Does this replace <code>systemd-analyze verify</code>?</summary>
+      <p>No, and nothing browser-based can. <code>systemd-analyze verify</code> resolves
+      dependencies and paths against your actual system. This check catches the authoring
+      mistakes — the ones that cause most first failures — instantly, from any machine, without
+      SSH. Use both.</p>
+    </details>
+    <details>
+      <summary>My unit contains hostnames and paths. Are they safe here?</summary>
+      <p>Yes. The file is parsed by JavaScript in your tab and never sent anywhere — open your
+      browser's network tab and watch: nothing leaves.</p>
+    </details>
+    <details>
+      <summary>Which unit types are understood?</summary>
+      <p>.service, .timer, .socket, .mount, .path and .target sections, with the deepest rules on
+      service and timer files — the two types people hand-write most.</p>
+    </details>
+  </section>
+
+  <section class="wrap tool-grid-section">
+    <h2>Other systemd jobs</h2>
+    <div class="tool-grid">
+      <a class="tool-tile" href="/unit.html">
+        <span class="tile-cmd">.service generator</span>
+        <span class="tile-desc">Form in, correct unit file + install commands out.</span>
+        <span class="tile-go">Generate a unit →</span>
+      </a>
+      <a class="tool-tile" href="/timer.html">
+        <span class="tile-cmd">cron → timer converter</span>
+        <span class="tile-desc">Old crontab line in, OnCalendar + .timer out.</span>
+        <span class="tile-go">Convert a crontab →</span>
+      </a>
+      <a class="tool-tile" href="/calendar.html">
+        <span class="tile-cmd">OnCalendar editor</span>
+        <span class="tile-desc">See the next five times your schedule actually fires.</span>
+        <span class="tile-go">Preview a schedule →</span>
+      </a>
+      <a class="tool-tile" href="/resources.html">
+        <span class="tile-cmd">resources</span>
+        <span class="tile-desc">The specs, rescues and free tiers we actually use.</span>
+        <span class="tile-go">Browse the shelf →</span>
+      </a>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p>unitdoctor.online — a static page that respects your server. No cookies, no analytics on your input.</p>
+    <p><a href="/privacy.html">privacy</a> · <a href="/terms.html">terms</a> · <a href="/history.html">version history</a></p>
+    <p class="colophon">Handmade HTML/CSS/JS — no framework, no build step · hosted on Cloudflare Workers · last updated 2026-09-05</p>
+  </div>
+</footer>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="assets/ud-stats.js"></script>
+<script src="assets/calendar.js"></script>
+<script src="assets/units.js"></script>
+<script src="assets/systemd-ui.js"></script>
+<script>
+(function () {
+  "use strict";
+  var $ = UD.$;
+
+  function verdictText(n, score) {
+    if (n === 0) return "No authoring mistakes found. Still run systemd-analyze verify on the box — it knows your filesystem.";
+    if (score >= 80) return "Minor issues. Worth fixing before you enable this.";
+    if (score >= 40) return "This unit will misbehave. Fix the high findings first.";
+    return "This unit will not survive contact with systemd. Start at the top.";
+  }
+
+  function scoreClass(score) {
+    return score >= 80 ? "good" : score >= 40 ? "warn" : "bad";
+  }
+
+  function render() {
+    var text = $("input").value;
+    var d = Units.diagnose(text);
+    var resEl = $("results"), errEl = $("error");
+    if (!text.trim()) { resEl.hidden = true; errEl.hidden = true; return; }
+    errEl.hidden = true;
+    $("score-n").textContent = d.score;
+    $("score-n").className = "n " + scoreClass(d.score);
+    $("verdict").textContent = verdictText(d.findings.length, d.score);
+    var order = { critical: 0, high: 1, medium: 2, low: 3 };
+    var sorted = d.findings.slice().sort(function (a, b) { return (order[a.severity] - order[b.severity]) || (a.line - b.line); });
+    $("findings").innerHTML = sorted.map(function (x) {
+      return "<div class='finding " + UD.esc(x.severity) + "'>" +
+        "<div class='finding-head'><span>line " + (x.line >= 0 ? (x.line + 1) : "—") + "</span><span>" +
+        UD.esc(x.severity) + "</span></div>" +
+        "<div class='finding-msg'>" + UD.esc(x.message) + "</div>" +
+        (x.fix ? "<div class='finding-fix'><b>fix →</b> " + UD.esc(x.fix) + "</div>" : "") +
+        "</div>";
+    }).join("");
+    resEl.hidden = false;
+  }
+
+  $("check").addEventListener("click", render);
+  $("input").addEventListener("keydown", function (e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === "Enter") { e.preventDefault(); render(); }
+  });
+
+  function loadExample(id, text) {
+    $(id).addEventListener("click", function (e) {
+      e.preventDefault();
+      $("input").value = text;
+      render();
+      return false;
+    });
+  }
+  loadExample("ex-broken", Units.EXAMPLES.broken);
+  loadExample("ex-service", Units.EXAMPLES.service);
+  loadExample("ex-timer", Units.EXAMPLES.timer);
+
+  render();
+})();
+</script>
+</body>
+</html>

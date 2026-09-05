@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en" translate="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google" content="notranslate">
+<title>Changelog Generator from Commits — Grouped CHANGELOG.md Drafts — UnitDoctor</title>
+<meta name="description" content="Free online changelog generator. Paste your commit subjects (git log --oneline works as-is), get a grouped CHANGELOG.md draft — Features, Bug Fixes, Performance — in Keep-a-Changelog spirit. Breaking changes flagged. 100% in your browser, no AI, nothing uploaded.">
+<link rel="canonical" href="https://unitdoctor.online/changelog.html">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231c1917'/%3E%3Ctext x='16' y='22' font-family='monospace' font-size='16' fill='%234ade80' text-anchor='middle'%3E%E2%9C%93%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="wordmark" href="/">unit<span class="mark">doctor</span><span class="tld">.online</span></a>
+    <nav>
+      <a href="/">commit</a>
+      <a href="/lint.html">lint</a>
+      <a href="/squash.html">squash</a>
+      <a href="/changelog.html" class="is-active">changelog</a>
+      <a href="/unit.html">unit</a>
+      <a href="/timer.html">cron</a>
+      <a href="/doctor.html">checker</a>
+      <a href="/calendar.html">OnCalendar</a>
+      <a href="/resources.html">resources</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero wrap">
+    <p class="micro-label">free · no signup · 100% local</p>
+    <h1>Changelog <em>drafts</em> from commits.</h1>
+    <p class="sub">Release day, and the changelog is blank. Paste the subjects since the last tag
+    — the output of <code>git log --oneline v1.3.0..HEAD</code> works as-is — and get a grouped
+    <code>CHANGELOG.md</code> draft: Features, Bug Fixes, Performance, the lot. A first line like
+    <code>v1.4.0</code> becomes the header; breaking changes get the ⚠️ they deserve.</p>
+    <p class="trust-row"><span>0 uploads</span><span>0 AI calls</span><span>0 cookies</span></p>
+  </section>
+
+  <section class="wrap wrap-wide">
+    <div class="tool-card" id="tool">
+      <div class="tool-topbar">
+        <div class="tool-tabs" role="tablist">
+          <span class="tab is-active"><span class="tab-en">Changelog</span></span>
+        </div>
+        <span class="engine-tag">engine v2.4 · 100% local</span>
+      </div>
+
+      <textarea id="input" class="input" rows="10" spellcheck="false"
+        placeholder="v1.4.0&#10;feat(auth): add login rate limit&#10;fix: handle empty token&#10;perf: cache token lookups&#10;…"></textarea>
+
+      <div class="tool-meta">
+        <span id="char-count">0 chars</span>
+        <label class="check" id="breaking-wrap" hidden><input type="checkbox" id="breaking"> breaking change</label>
+        <span class="hint" id="diff-hint">one subject per line; a first line like v1.4.0 becomes the header</span>
+        <span class="sample-links">
+          try: <a href="#" id="sample-changelog">a sample log</a>
+          <a href="#" id="sample-diff" hidden></a>
+          <a href="#" id="sample-text" hidden></a>
+        </span>
+      </div>
+
+      <div class="actions-row">
+        <button class="btn-primary" id="generate">Draft the changelog</button>
+        <span class="kbd-hint"><kbd>Ctrl</kbd> + <kbd>Enter</kbd></span>
+      </div>
+      <p class="error" id="error" hidden></p>
+
+      <div class="results" id="results" hidden>
+        <div class="analysis" id="analysis" hidden></div>
+        <div class="rec-block" id="rec-block" hidden>
+          <div class="rec-head">
+            <span class="micro-label" id="rec-label">changelog.md</span>
+            <div class="fmt-switch" id="fmt-switch" role="group" aria-label="output format" hidden>
+              <button class="fmt-btn is-active" data-fmt="conventional">conventional</button>
+            </div>
+          </div>
+          <pre class="rec-msg" id="rec-msg"></pre>
+          <div class="rec-foot">
+            <button class="btn-primary btn-copy-main" id="rec-copy">Copy changelog.md</button>
+          </div>
+        </div>
+        <div class="alts" id="alts" hidden></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap how">
+    <h2>How subjects become a changelog</h2>
+    <ol class="plain-steps">
+      <li><strong>Grouping.</strong> Conventional types map to sections: <code>feat</code> →
+      Features, <code>fix</code> → Bug Fixes, <code>perf</code> → Performance, <code>docs</code> →
+      Documentation, <code>chore/ci/build</code> → Maintenance, and everything unrecognized lands
+      in Other rather than vanishing.</li>
+      <li><strong>The header.</strong> A first line that looks like a version
+      (<code>v1.4.0</code>) becomes the release heading; without one, the draft starts with
+      <code>Unreleased</code>.</li>
+      <li><strong>Breaking changes.</strong> <code>feat!:</code> subjects and
+      <code>BREAKING CHANGE</code> footers are grouped up top with a ⚠️, where upgraders look
+      first.</li>
+      <li><strong>Keep-a-Changelog spirit.</strong> Output is plain markdown you can paste into
+      your existing file — the spec it follows is on our
+      <a href="/resources.html">resources shelf</a>.</li>
+    </ol>
+  </section>
+
+  <section class="wrap faq">
+    <h2>Quick questions</h2>
+    <details>
+      <summary>Does this replace semantic-release?</summary>
+      <p>No — it's for the releases where you write the changelog by hand and just want the
+      grouping done. semantic-release automates the whole pipeline; this drafts the document in
+      thirty seconds with zero setup.</p>
+    </details>
+    <details>
+      <summary>Does my commit history get uploaded?</summary>
+      <p>No. Plain JavaScript in your tab. There is no backend to receive it.</p>
+    </details>
+  </section>
+
+  <section class="wrap tool-grid-section">
+    <h2>Other jobs this engine does</h2>
+    <div class="tool-grid">
+      <a class="tool-tile" href="/">
+        <span class="tile-cmd">commit generator</span>
+        <span class="tile-desc">Diff or one sentence in, conventional commit message out — rules, not AI.</span>
+        <span class="tile-go">Generate →</span>
+      </a>
+      <a class="tool-tile" href="/lint.html">
+        <span class="tile-cmd">commit linter</span>
+        <span class="tile-desc">One message in, spec violations listed out.</span>
+        <span class="tile-go">Check a message →</span>
+      </a>
+      <a class="tool-tile" href="/squash.html">
+        <span class="tile-cmd">squash &amp; PR titles</span>
+        <span class="tile-desc">Branch log in, one squash title out.</span>
+        <span class="tile-go">Title a branch →</span>
+      </a>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p>unitdoctor.online — a static page that respects your code. No cookies, no analytics on your input.</p>
+    <p><a href="/privacy.html">privacy</a> · <a href="/terms.html">terms</a> · <a href="/cheatsheet.html">conventional commits cheat sheet</a> · <a href="/history.html">version history</a></p>
+    <p class="colophon">Handmade HTML/CSS/JS — no framework, no build step · hosted on Cloudflare Workers · last updated 2026-09-05</p>
+  </div>
+</footer>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="assets/ud-stats.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>

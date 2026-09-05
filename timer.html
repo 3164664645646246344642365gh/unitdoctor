@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en" translate="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google" content="notranslate">
+<title>Cron to Systemd Timer Converter — crontab ↔ OnCalendar, Both Ways — UnitDoctor</title>
+<meta name="description" content="Free cron to systemd timer converter. Paste a crontab line, get the OnCalendar= value, a ready .timer unit, and the next fire times — or convert OnCalendar back to cron. Warns when the two grammars genuinely don't match (@reboot, day-of-month OR day-of-week, seconds). 100% in your browser.">
+<link rel="canonical" href="https://unitdoctor.online/timer.html">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231c1917'/%3E%3Ctext x='16' y='22' font-family='monospace' font-size='16' fill='%234ade80' text-anchor='middle'%3E%E2%9C%93%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="wordmark" href="/">unit<span class="mark">doctor</span><span class="tld">.online</span></a>
+    <nav>
+      <a href="/">commit</a>
+      <a href="/lint.html">lint</a>
+      <a href="/squash.html">squash</a>
+      <a href="/changelog.html">changelog</a>
+      <a href="/unit.html">unit</a>
+      <a href="/timer.html" class="is-active">cron</a>
+      <a href="/doctor.html">checker</a>
+      <a href="/calendar.html">OnCalendar</a>
+      <a href="/resources.html">resources</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero wrap">
+    <p class="micro-label">free · no signup · 100% local</p>
+    <h1>Cron → systemd timer, <em>and back</em>.</h1>
+    <p class="sub">cron reads minute-hour-day-month-weekday; OnCalendar puts the weekday up front
+    and wants seconds. Migration is mostly mechanical — except the places where it silently
+    isn't: <code>@reboot</code>, day-of-month OR day-of-week, sub-minute precision. Paste one
+    side, get the other, and read the warnings before you <code>systemctl enable</code>.</p>
+    <p class="trust-row"><span>0 uploads</span><span>0 accounts</span><span>0 cookies</span></p>
+  </section>
+
+  <section class="wrap wrap-wide">
+    <div class="tool-card" id="tool">
+      <div class="tool-topbar">
+        <div class="tool-tabs" role="tablist">
+          <span class="tab is-active"><span class="tab-en">cron ↔ OnCalendar</span></span>
+        </div>
+        <span class="engine-tag">engine v3.0 · 100% local</span>
+      </div>
+
+      <div class="ud-form">
+        <div class="ud-field">
+          <label>Direction</label>
+          <select id="dir">
+            <option value="c2s">cron → systemd (OnCalendar + .timer)</option>
+            <option value="s2c">systemd (OnCalendar) → cron</option>
+          </select>
+        </div>
+        <div class="ud-field ud-span2">
+          <label>Expression <small>— cron line (5 fields, @daily works) or OnCalendar spec</small></label>
+          <input type="text" id="expr" value="0 2 * * 1-5" spellcheck="false">
+        </div>
+      </div>
+
+      <div class="chip-row">
+        <button class="spec-chip" data-cron="*/15 * * * *">every 15 min</button>
+        <button class="spec-chip" data-cron="0 2 * * 1-5">weekdays 2 AM</button>
+        <button class="spec-chip" data-cron="@daily">@daily</button>
+        <button class="spec-chip" data-cron="@reboot">@reboot</button>
+        <button class="spec-chip" data-cal="Mon..Fri *-*-* 09:00:00">OnCalendar weekdays 9 AM</button>
+        <button class="spec-chip" data-cal="*-*-* *:0/15:00">OnCalendar every 15 min</button>
+      </div>
+
+      <div class="tool-meta">
+        <span class="hint" id="dir-hint">paste a crontab line — the .timer file and warnings come out below</span>
+        <span class="sample-links"></span>
+      </div>
+
+      <p class="error" id="error" hidden></p>
+      <div id="warns" hidden></div>
+
+      <div class="results" id="results" hidden>
+        <div class="ud-out-head">
+          <span class="ud-file-label" id="out1-label">OnCalendar</span>
+          <button class="btn-ghost" id="copy1">Copy</button>
+        </div>
+        <pre class="rec-msg" id="out1"></pre>
+
+        <div class="ud-out-head" id="out2-head">
+          <span class="ud-file-label" id="out2-label">.timer file</span>
+          <button class="btn-ghost" id="copy2">Copy</button>
+        </div>
+        <pre class="rec-msg" id="out2"></pre>
+
+        <div id="fires-block">
+          <div class="ud-out-head"><span class="ud-file-label">next fire times (your browser's timezone)</span></div>
+          <ul class="fires" id="fires"></ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap how">
+    <h2>Where the two grammars genuinely disagree</h2>
+    <ol class="plain-steps">
+      <li><strong>Day-of-month + day-of-week.</strong> cron fires when <em>either</em> matches
+      (if both are restricted); systemd fires only when <em>both</em> match. The converter keeps
+      the AND and tells you to split into two <code>OnCalendar=</code> lines for cron's OR.</li>
+      <li><strong>@reboot.</strong> cron's "once at boot" has no OnCalendar equivalent — the right
+      idiom is <code>OnBootSec=1min</code> in the [Timer] section, which is what the error will
+      suggest.</li>
+      <li><strong>Seconds.</strong> OnCalendar can fire sub-minute; cron cannot. Going OnCalendar
+      → cron with seconds warns that precision will be lost.</li>
+      <li><strong>Persistent=true</strong> is added by default: a job missed while the box was off
+      runs once at next boot, which cron silently skips.</li>
+    </ol>
+  </section>
+
+  <section class="wrap faq">
+    <h2>Quick questions</h2>
+    <details>
+      <summary>How do I install the .timer file?</summary>
+      <p>Save it as <code>/etc/systemd/system/my-task.timer</code>, pair it with a .service that
+      has the same base name (or generate both with our <a href="/unit.html">unit generator</a>),
+      then <code>sudo systemctl daemon-reload &amp;&amp; sudo systemctl enable --now my-task.timer</code>.
+      Enable the <em>timer</em>, not the service.</p>
+    </details>
+    <details>
+      <summary>How do I verify the schedule on my server?</summary>
+      <p><code>systemd-analyze calendar 'YOUR-EXPRESSION'</code> prints the next fires straight
+      from systemd — it is the final authority. The preview below uses the same rules in
+      JavaScript, in your browser's timezone.</p>
+    </details>
+    <details>
+      <summary>Is my crontab uploaded?</summary>
+      <p>No. Everything — parsing, conversion, the fire-time preview — runs in your tab.</p>
+    </details>
+  </section>
+
+  <section class="wrap tool-grid-section">
+    <h2>Other systemd jobs</h2>
+    <div class="tool-grid">
+      <a class="tool-tile" href="/unit.html">
+        <span class="tile-cmd">.service generator</span>
+        <span class="tile-desc">Form in, correct unit file + install commands out.</span>
+        <span class="tile-go">Generate a unit →</span>
+      </a>
+      <a class="tool-tile" href="/doctor.html">
+        <span class="tile-cmd">unit checker</span>
+        <span class="tile-desc">Paste a unit, get line-numbered findings and fixes.</span>
+        <span class="tile-go">Check a unit →</span>
+      </a>
+      <a class="tool-tile" href="/calendar.html">
+        <span class="tile-cmd">OnCalendar editor</span>
+        <span class="tile-desc">See the next five times your schedule actually fires.</span>
+        <span class="tile-go">Preview a schedule →</span>
+      </a>
+      <a class="tool-tile" href="/resources.html">
+        <span class="tile-cmd">resources</span>
+        <span class="tile-desc">The specs, rescues and free tiers we actually use.</span>
+        <span class="tile-go">Browse the shelf →</span>
+      </a>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p>unitdoctor.online — a static page that respects your server. No cookies, no analytics on your input.</p>
+    <p><a href="/privacy.html">privacy</a> · <a href="/terms.html">terms</a> · <a href="/history.html">version history</a></p>
+    <p class="colophon">Handmade HTML/CSS/JS — no framework, no build step · hosted on Cloudflare Workers · last updated 2026-09-05</p>
+  </div>
+</footer>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="assets/ud-stats.js"></script>
+<script src="assets/calendar.js"></script>
+<script src="assets/systemd-ui.js"></script>
+<script>
+(function () {
+  "use strict";
+  var $ = UD.$;
+
+  function relative(d) {
+    var ms = d.getTime() - Date.now();
+    if (ms < 0) return "";
+    var mins = Math.round(ms / 60000);
+    if (mins < 1) return "in <1 min";
+    if (mins < 60) return "in " + mins + " min";
+    var hrs = Math.floor(mins / 60);
+    if (hrs < 24) return "in " + hrs + " h " + (mins % 60) + " min";
+    return "in " + Math.floor(hrs / 24) + " d";
+  }
+
+  function renderFires(oncal) {
+    var p = Cal.parse(oncal);
+    var ul = $("fires");
+    ul.innerHTML = "";
+    if (!p.ok) { $("fires-block").hidden = true; return; }
+    var runs = Cal.nextRuns(p, 5, new Date());
+    if (!runs.length) { $("fires-block").hidden = true; return; }
+    runs.forEach(function (d) {
+      var li = document.createElement("li");
+      li.innerHTML = "<span>" + UD.esc(UD.fmtDate(d)) + "</span><span class='rel'>" +
+        UD.esc(relative(d)) + "</span>";
+      ul.appendChild(li);
+    });
+    $("fires-block").hidden = false;
+  }
+
+  function showWarns(list) {
+    var w = $("warns");
+    if (!list || !list.length) { w.hidden = true; w.innerHTML = ""; return; }
+    w.innerHTML = list.map(function (x) {
+      return "<p class='warn-note'>⚠ " + UD.esc(x) + "</p>";
+    }).join("");
+    w.hidden = false;
+  }
+
+  function render() {
+    var dir = $("dir").value;
+    var expr = $("expr").value.trim();
+    var errEl = $("error"), resEl = $("results");
+    $("dir-hint").textContent = dir === "c2s"
+      ? "paste a crontab line — the .timer file and warnings come out below"
+      : "paste an OnCalendar spec — the crontab line comes out below";
+    if (!expr) { errEl.hidden = true; resEl.hidden = true; showWarns([]); return; }
+
+    if (dir === "c2s") {
+      var r = Cal.cronToCalendar(expr);
+      if (!r.ok) {
+        errEl.textContent = r.errors[0];
+        errEl.hidden = false; resEl.hidden = true; showWarns(r.warnings);
+        return;
+      }
+      errEl.hidden = true;
+      $("out1-label").textContent = "OnCalendar=";
+      $("out1").textContent = r.oncalendar;
+      $("out2-head").hidden = false;
+      $("out2-label").textContent = "/etc/systemd/system/my-task.timer";
+      $("out2").textContent = r.timer;
+      resEl.hidden = false;
+      resEl.dataset.out1 = r.oncalendar;
+      resEl.dataset.out2 = r.timer;
+      showWarns(r.warnings);
+      renderFires(r.oncalendar);
+    } else {
+      var c = Cal.calendarToCron(expr);
+      if (!c.ok) {
+        errEl.textContent = c.errors[0];
+        errEl.hidden = false; resEl.hidden = true; showWarns(c.warnings);
+        return;
+      }
+      errEl.hidden = true;
+      $("out1-label").textContent = "crontab line";
+      $("out1").textContent = c.cron;
+      $("out2-head").hidden = true;
+      $("out2").textContent = "";
+      resEl.hidden = false;
+      resEl.dataset.out1 = c.cron;
+      resEl.dataset.out2 = "";
+      showWarns(c.warnings);
+      renderFires(expr);
+    }
+  }
+
+  UD.live(render, "dir", "expr");
+
+  $("copy1").addEventListener("click", function () {
+    UD.copyText($("results").dataset.out1 || "", "copied");
+  });
+  $("copy2").addEventListener("click", function () {
+    UD.copyText($("results").dataset.out2 || "", ".timer file copied");
+  });
+
+  Array.prototype.forEach.call(document.querySelectorAll(".spec-chip"), function (btn) {
+    btn.addEventListener("click", function () {
+      var isCron = btn.dataset.cron !== undefined;
+      $("dir").value = isCron ? "c2s" : "s2c";
+      $("expr").value = isCron ? btn.dataset.cron : btn.dataset.cal;
+      render();
+    });
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en" translate="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google" content="notranslate">
+<title>Systemd Service File Generator — Create a .service Unit in Your Browser — UnitDoctor</title>
+<meta name="description" content="Free systemd .service file generator. Fill a short form — command, user, restart policy, boot start — and get a correct unit file plus the exact systemctl commands to install it. Warns about relative paths (status=203/EXEC) before they bite. 100% in your browser, nothing uploaded.">
+<link rel="canonical" href="https://unitdoctor.online/unit.html">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231c1917'/%3E%3Ctext x='16' y='22' font-family='monospace' font-size='16' fill='%234ade80' text-anchor='middle'%3E%E2%9C%93%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="wordmark" href="/">unit<span class="mark">doctor</span><span class="tld">.online</span></a>
+    <nav>
+      <a href="/">commit</a>
+      <a href="/lint.html">lint</a>
+      <a href="/squash.html">squash</a>
+      <a href="/changelog.html">changelog</a>
+      <a href="/unit.html" class="is-active">unit</a>
+      <a href="/timer.html">cron</a>
+      <a href="/doctor.html">checker</a>
+      <a href="/calendar.html">OnCalendar</a>
+      <a href="/resources.html">resources</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero wrap">
+    <p class="micro-label">free · no signup · 100% local</p>
+    <h1>Systemd <em>service file</em> generator.</h1>
+    <p class="sub">You wrote a program. You want it running on the server, restarting when it
+    crashes, starting on boot. That takes a .service unit — dozens of directives, and the
+    template you copied from a forum probably gets one of them wrong. Fill the form, get the
+    file and the three commands that install it.</p>
+    <p class="trust-row"><span>0 uploads</span><span>0 accounts</span><span>0 cookies</span></p>
+  </section>
+
+  <section class="wrap wrap-wide">
+    <div class="tool-card" id="tool">
+      <div class="tool-topbar">
+        <div class="tool-tabs" role="tablist">
+          <span class="tab is-active"><span class="tab-en">.service generator</span></span>
+        </div>
+        <span class="engine-tag">engine v3.0 · 100% local</span>
+      </div>
+
+      <div class="ud-form">
+        <div class="ud-field">
+          <label>Service name <small>— file becomes &lt;name&gt;.service</small></label>
+          <input type="text" id="f-name" value="my-app" spellcheck="false">
+        </div>
+        <div class="ud-field ud-span2">
+          <label>Description</label>
+          <input type="text" id="f-desc" value="My application" spellcheck="false">
+        </div>
+        <div class="ud-field ud-span2">
+          <label>Command to run <small>— absolute path required, e.g. /usr/bin/node /opt/app/server.js</small></label>
+          <input type="text" id="f-exec" value="/usr/bin/node /opt/app/server.js" spellcheck="false">
+        </div>
+        <div class="ud-field">
+          <label>Run as user</label>
+          <input type="text" id="f-user" value="www-data" spellcheck="false">
+        </div>
+        <div class="ud-field">
+          <label>Working directory <small>— optional</small></label>
+          <input type="text" id="f-dir" value="/opt/app" spellcheck="false">
+        </div>
+        <div class="ud-field">
+          <label>Restart policy</label>
+          <select id="f-restart">
+            <option value="on-failure">on-failure (recommended)</option>
+            <option value="always">always</option>
+            <option value="no">no</option>
+          </select>
+        </div>
+        <div class="ud-field">
+          <label>Memory cap <small>— optional, e.g. 512M</small></label>
+          <input type="text" id="f-mem" value="" placeholder="512M" spellcheck="false">
+        </div>
+      </div>
+
+      <div class="ud-checks">
+        <label class="check"><input type="checkbox" id="f-boot" checked> start on boot</label>
+        <label class="check"><input type="checkbox" id="f-net"> wait for network</label>
+        <label class="check"><input type="checkbox" id="f-harden" checked> basic sandboxing</label>
+      </div>
+
+      <div class="tool-meta">
+        <span class="hint">editing the form updates the file live</span>
+        <span class="sample-links">try: <a href="#" id="ud-example">a typical node app</a></span>
+      </div>
+
+      <p class="error" id="error" hidden></p>
+
+      <div class="results" id="results" hidden>
+        <div class="ud-out-head">
+          <span class="ud-file-label" id="out-label">/etc/systemd/system/my-app.service</span>
+          <button class="btn-ghost" id="copy-unit">Copy unit</button>
+        </div>
+        <pre class="rec-msg" id="out-unit"></pre>
+        <div class="ud-out-head">
+          <span class="ud-file-label">install it</span>
+          <button class="btn-ghost" id="copy-cmds">Copy commands</button>
+        </div>
+        <pre class="rec-msg" id="out-cmds"></pre>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap how">
+    <h2>What the form becomes</h2>
+    <ol class="plain-steps">
+      <li><strong>The file.</strong> A [Unit] section with the description, a [Service] section with
+      your command, user, restart policy and (optionally) sandboxing directives, and an [Install]
+      section so <code>systemctl enable</code> actually works.</li>
+      <li><strong>The guardrail.</strong> A relative command like <code>node app.js</code> is the #1
+      cause of <code>status=203/EXEC</code> — the generator refuses it and says so, instead of
+      handing you a file that fails at 2 AM.</li>
+      <li><strong>The install.</strong> Three commands: copy into /etc/systemd/system/,
+      <code>daemon-reload</code>, <code>enable --now</code>. The last one starts it immediately
+      <em>and</em> at boot.</li>
+      <li><strong>Sandboxing, if you asked.</strong> NoNewPrivileges, ProtectSystem=full,
+      ProtectHome=read-only, PrivateTmp — the cheap four that stop a compromised app from doing
+      maximum damage.</li>
+    </ol>
+  </section>
+
+  <section class="wrap faq">
+    <h2>Quick questions</h2>
+    <details>
+      <summary>Where do I put the generated file?</summary>
+      <p>Save it as <code>/etc/systemd/system/&lt;name&gt;.service</code> (the header comment says
+      the exact path), then run the three install commands shown under the file. Permissions should
+      be 644, owner root.</p>
+    </details>
+    <details>
+      <summary>Does this replace <code>systemd-analyze verify</code>?</summary>
+      <p>No — nothing in a browser can see your server's filesystem or users. This catches the
+      authoring mistakes that cause most failures; run <code>systemd-analyze verify</code> on the
+      box for the full schema check. Or paste the finished file into our <a href="/doctor.html">unit
+      checker</a> first.</p>
+    </details>
+    <details>
+      <summary>Is my command or server name uploaded?</summary>
+      <p>No. The file is assembled by plain JavaScript in your tab. There is no backend.</p>
+    </details>
+  </section>
+
+  <section class="wrap tool-grid-section">
+    <h2>Other systemd jobs</h2>
+    <div class="tool-grid">
+      <a class="tool-tile" href="/timer.html">
+        <span class="tile-cmd">cron → timer converter</span>
+        <span class="tile-desc">Old crontab line in, OnCalendar + .timer out — both directions.</span>
+        <span class="tile-go">Convert a crontab →</span>
+      </a>
+      <a class="tool-tile" href="/doctor.html">
+        <span class="tile-cmd">unit checker</span>
+        <span class="tile-desc">Paste a unit, get line-numbered findings and fixes.</span>
+        <span class="tile-go">Check a unit →</span>
+      </a>
+      <a class="tool-tile" href="/calendar.html">
+        <span class="tile-cmd">OnCalendar editor</span>
+        <span class="tile-desc">See the next five times your schedule actually fires.</span>
+        <span class="tile-go">Preview a schedule →</span>
+      </a>
+      <a class="tool-tile" href="/resources.html">
+        <span class="tile-cmd">resources</span>
+        <span class="tile-desc">The specs, rescues and free tiers we actually use.</span>
+        <span class="tile-go">Browse the shelf →</span>
+      </a>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p>unitdoctor.online — a static page that respects your server. No cookies, no analytics on your input.</p>
+    <p><a href="/privacy.html">privacy</a> · <a href="/terms.html">terms</a> · <a href="/history.html">version history</a></p>
+    <p class="colophon">Handmade HTML/CSS/JS — no framework, no build step · hosted on Cloudflare Workers · last updated 2026-09-05</p>
+  </div>
+</footer>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="assets/ud-stats.js"></script>
+<script src="assets/calendar.js"></script>
+<script src="assets/units.js"></script>
+<script src="assets/systemd-ui.js"></script>
+<script>
+(function () {
+  "use strict";
+  var $ = UD.$;
+  var fields = ["f-name", "f-desc", "f-exec", "f-user", "f-dir", "f-restart", "f-mem"];
+  var checks = ["f-boot", "f-net", "f-harden"];
+
+  function render() {
+    var opts = {
+      name: $("f-name").value,
+      description: $("f-desc").value,
+      execStart: $("f-exec").value.trim(),
+      user: $("f-user").value.trim(),
+      workingDirectory: $("f-dir").value.trim(),
+      restartPolicy: $("f-restart").value,
+      restart: $("f-restart").value !== "no",
+      memoryMax: $("f-mem").value.trim(),
+      wantedBy: "multi-user.target",
+      afterNetwork: $("f-net").checked,
+      harden: $("f-harden").checked
+    };
+    var g = Units.generateService(opts);
+    var errEl = $("error"), resEl = $("results");
+    if (!g.ok) {
+      errEl.textContent = g.errors[0];
+      errEl.hidden = false;
+      resEl.hidden = true;
+      return;
+    }
+    errEl.hidden = true;
+    $("out-label").textContent = "/etc/systemd/system/" + g.name + ".service";
+    $("out-unit").textContent = g.unit;
+    $("out-cmds").textContent = g.commands;
+    resEl.hidden = false;
+    resEl.dataset.unit = g.unit;
+    resEl.dataset.cmds = g.commands;
+  }
+
+  UD.live.apply(null, [render].concat(fields, checks));
+
+  $("ud-example").addEventListener("click", function (e) {
+    e.preventDefault();
+    $("f-name").value = "webapp";
+    $("f-desc").value = "Node.js web application";
+    $("f-exec").value = "/usr/bin/node /opt/webapp/server.js";
+    $("f-user").value = "www-data";
+    $("f-dir").value = "/opt/webapp";
+    $("f-restart").value = "on-failure";
+    $("f-mem").value = "512M";
+    $("f-harden").checked = true;
+    render();
+    return false;
+  });
+
+  $("copy-unit").addEventListener("click", function () {
+    UD.copyText($("results").dataset.unit || "", "unit file copied");
+  });
+  $("copy-cmds").addEventListener("click", function () {
+    UD.copyText($("results").dataset.cmds || "", "install commands copied");
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

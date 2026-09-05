@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Conventional Commits Cheat Sheet — UnitDoctor</title>
+<meta name="description" content="A plain, complete Conventional Commits cheat sheet: all 11 types, scope and breaking change syntax, subject rules, and copy-paste examples.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231c1917'/%3E%3Ctext x='16' y='22' font-family='monospace' font-size='16' fill='%234ade80' text-anchor='middle'%3E%E2%9C%93%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="wordmark" href="/">unit<span class="mark">doctor</span><span class="tld">.online</span></a>
+    <nav>
+      <a href="/">commit</a>
+      <a href="/lint.html">lint</a>
+      <a href="/squash.html">squash</a>
+      <a href="/changelog.html">changelog</a>
+      <a href="/unit.html">unit</a>
+      <a href="/timer.html">cron</a>
+      <a href="/doctor.html">checker</a>
+      <a href="/calendar.html">OnCalendar</a>
+      <a href="/resources.html">resources</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page wrap">
+  <p class="micro-label">reference · bookmark this</p>
+  <h1>Conventional Commits cheat sheet</h1>
+  <p class="lede">Everything the specification expects, on one page, without the tutorial voice.
+  The format exists so that humans — and tools like commitlint and semantic-release — can read
+  your history mechanically.</p>
+
+  <h2>The shape</h2>
+  <div class="example-block">&lt;type&gt;[optional scope][!]: &lt;description&gt;
+
+[optional body]
+
+[optional footer(s)]</div>
+  <p>Real example with everything on:</p>
+  <div class="example-block">feat(auth)!: use refresh tokens for sessions
+
+Sessions now expire after 24h instead of living forever.
+
+BREAKING CHANGE: the "remember me" checkbox has been removed.
+Refs: #412</div>
+
+  <h2>The 11 types</h2>
+  <table class="spec-table">
+    <thead><tr><th>Type</th><th>Use for</th><th>SemVer effect</th></tr></thead>
+    <tbody>
+      <tr><td>feat</td><td>A new user-facing capability</td><td>MINOR</td></tr>
+      <tr><td>fix</td><td>A bug fix</td><td>PATCH</td></tr>
+      <tr><td>docs</td><td>Documentation only</td><td>—</td></tr>
+      <tr><td>style</td><td>Formatting, whitespace, semicolons — no logic change</td><td>—</td></tr>
+      <tr><td>refactor</td><td>Code change that neither adds a feature nor fixes a bug</td><td>—</td></tr>
+      <tr><td>perf</td><td>A change that improves performance</td><td>PATCH</td></tr>
+      <tr><td>test</td><td>Adding or correcting tests</td><td>—</td></tr>
+      <tr><td>build</td><td>Build system or external dependencies (webpack, npm, cargo)</td><td>—</td></tr>
+      <tr><td>ci</td><td>CI/CD configuration (GitHub Actions, GitLab CI, Jenkins)</td><td>—</td></tr>
+      <tr><td>chore</td><td>Maintenance that touches no src or test files</td><td>—</td></tr>
+      <tr><td>revert</td><td>Reverting a previous commit</td><td>varies</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Subject line rules</h2>
+  <ul>
+    <li><strong>Imperative mood:</strong> "add validation", not "added validation" — as if completing
+    the sentence <em>"if applied, this commit will…"</em></li>
+    <li><strong>≤ 72 characters</strong> is the safe ceiling; ~50 is the comfortable one for <code>git log --oneline</code>.</li>
+    <li><strong>No trailing period.</strong> The subject is a headline, not a sentence.</li>
+    <li><strong>Lowercase start</strong> is convention (unless the first word is a proper noun or acronym).</li>
+  </ul>
+
+  <h2>Scope</h2>
+  <p>Scope is free-form but should match your project's module names: <code>feat(auth):</code>,
+  <code>fix(api):</code>, <code>chore(deps):</code>. Consistency matters more than the specific words —
+  pick the top-level directories of your repo and stick to them. Teams that skip scopes entirely are
+  also following the spec; just be consistent.</p>
+
+  <h2>Breaking changes</h2>
+  <p>Two legal ways — use either, or both:</p>
+  <ul>
+    <li>Put <code>!</code> before the colon: <code>refactor!: drop Node 16 support</code></li>
+    <li>Add a footer: <code>BREAKING CHANGE: the export "parseConfig" was removed</code></li>
+  </ul>
+  <p>The footer form lets you explain <em>what</em> broke and <em>how to migrate</em>. The <code>!</code>
+  form is the quick flag. semantic-release reads both as a MAJOR bump.</p>
+
+  <h2>Footers worth knowing</h2>
+  <div class="example-block">Closes #123
+Refs #456, #789
+Reviewed-by: Z
+Co-authored-by: Name &lt;name@example.com&gt;</div>
+
+  <h2>Common mistakes</h2>
+  <ul>
+    <li>Mixing concerns: one commit should carry one type. Split the diff.</li>
+    <li>Past tense subjects — the number one lint failure.</li>
+    <li>Using <code>feat</code> for internal-only additions; if no user can observe it, it's usually
+    <code>refactor</code> or <code>chore</code>.</li>
+    <li>Giant bodies nobody reads. If the body is over ~6 lines, the commit probably needs splitting.</li>
+  </ul>
+
+  <h2>Generate instead of memorize</h2>
+  <p>You don't need this table memorized — <a href="/">the generator</a> applies it from your diff
+  and, if you teach it, from your own history. Runs entirely in your browser, nothing uploaded.</p>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p>unitdoctor.online — a static page that respects your code.</p>
+    <p><a href="/privacy.html">privacy</a> · <a href="/terms.html">terms</a> · <a href="/">generator</a></p>
+  </div>
+</footer>
+
+</body>
+</html>

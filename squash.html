@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en" translate="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google" content="notranslate">
+<title>Squash &amp; PR Title Generator — One Title for the Whole Branch — UnitDoctor</title>
+<meta name="description" content="Free online squash commit title generator. Paste git log --oneline from your feature branch, get one merge title that leads with the dominant type, plus a ready-made body listing every commit. For GitHub's squash box — 100% in your browser, no AI, nothing uploaded.">
+<link rel="canonical" href="https://unitdoctor.online/squash.html">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231c1917'/%3E%3Ctext x='16' y='22' font-family='monospace' font-size='16' fill='%234ade80' text-anchor='middle'%3E%E2%9C%93%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="wordmark" href="/">unit<span class="mark">doctor</span><span class="tld">.online</span></a>
+    <nav>
+      <a href="/">commit</a>
+      <a href="/lint.html">lint</a>
+      <a href="/squash.html" class="is-active">squash</a>
+      <a href="/changelog.html">changelog</a>
+      <a href="/unit.html">unit</a>
+      <a href="/timer.html">cron</a>
+      <a href="/doctor.html">checker</a>
+      <a href="/calendar.html">OnCalendar</a>
+      <a href="/resources.html">resources</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero wrap">
+    <p class="micro-label">free · no signup · 100% local</p>
+    <h1>Squash &amp; PR <em>title</em> generator.</h1>
+    <p class="sub">Squash-merging on GitHub's web UI? The squash box is empty and your terminal
+    helpers are twenty minutes of setup you don't have. Paste the branch's
+    <code>git log --oneline</code> here — one title comes back, led by the branch's dominant
+    type, with a body that lists every commit underneath.</p>
+    <p class="trust-row"><span>0 uploads</span><span>0 AI calls</span><span>0 cookies</span></p>
+  </section>
+
+  <section class="wrap wrap-wide">
+    <div class="tool-card" id="tool">
+      <div class="tool-topbar">
+        <div class="tool-tabs" role="tablist">
+          <span class="tab is-active"><span class="tab-en">Squash / PR title</span></span>
+        </div>
+        <span class="engine-tag">engine v2.4 · 100% local</span>
+      </div>
+
+      <textarea id="input" class="input" rows="9" spellcheck="false"
+        placeholder="feat(auth): add login rate limit&#10;fix: handle empty token&#10;chore(deps): bump vite to 6.1&#10;…"></textarea>
+
+      <div class="tool-meta">
+        <span id="char-count">0 chars</span>
+        <label class="check" id="breaking-wrap" hidden><input type="checkbox" id="breaking"> breaking change</label>
+        <span class="hint" id="diff-hint">one commit subject per line — `git log --oneline` output works as-is</span>
+        <span class="sample-links">
+          try: <a href="#" id="sample-squash">a sample branch</a>
+          <a href="#" id="sample-diff" hidden></a>
+          <a href="#" id="sample-text" hidden></a>
+        </span>
+      </div>
+
+      <div class="actions-row">
+        <button class="btn-primary" id="generate">Generate squash title</button>
+        <span class="kbd-hint"><kbd>Ctrl</kbd> + <kbd>Enter</kbd></span>
+      </div>
+      <p class="error" id="error" hidden></p>
+
+      <div class="results" id="results" hidden>
+        <div class="analysis" id="analysis" hidden></div>
+        <div class="rec-block" id="rec-block" hidden>
+          <div class="rec-head">
+            <span class="micro-label" id="rec-label">squash commit title</span>
+            <div class="fmt-switch" id="fmt-switch" role="group" aria-label="output format" hidden>
+              <button class="fmt-btn is-active" data-fmt="conventional">conventional</button>
+            </div>
+          </div>
+          <pre class="rec-msg" id="rec-msg"></pre>
+          <div class="rec-foot">
+            <button class="btn-primary btn-copy-main" id="rec-copy">Copy title + body</button>
+          </div>
+        </div>
+        <div class="alts" id="alts" hidden></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap how">
+    <h2>How the title gets picked</h2>
+    <ol class="plain-steps">
+      <li><strong>Count the types.</strong> The branch's subjects are tallied — if most commits are
+      <code>feat</code>, the title leads with <code>feat</code>; if there's a single
+      <code>fix</code> among <code>chore</code>s, the fix wins anyway because it matters more.</li>
+      <li><strong>Scope follows the majority.</strong> The most common scope across the branch
+      rides along — <code>feat(auth)</code> if most touches were auth.</li>
+      <li><strong>Breaking changes shout.</strong> One breaking commit turns the title into
+      <code>feat!:</code> and the body says why.</li>
+      <li><strong>The body is the receipt.</strong> Every subject from the branch is listed, so the
+      squash merge still tells the whole story.</li>
+    </ol>
+  </section>
+
+  <section class="wrap faq">
+    <h2>Quick questions</h2>
+    <details>
+      <summary>Why not just let Copilot write the squash title?</summary>
+      <p>On GitHub's web UI there's no assistant in the squash box, and on locked-down machines
+      there's no extension to install. This page needs nothing but a browser tab — and it takes
+      the branch log you already copied.</p>
+    </details>
+    <details>
+      <summary>Does my branch history get uploaded?</summary>
+      <p>No. Plain JavaScript in your tab. There is no backend to receive it.</p>
+    </details>
+  </section>
+
+  <section class="wrap tool-grid-section">
+    <h2>Other jobs this engine does</h2>
+    <div class="tool-grid">
+      <a class="tool-tile" href="/">
+        <span class="tile-cmd">commit generator</span>
+        <span class="tile-desc">Diff or one sentence in, conventional commit message out — rules, not AI.</span>
+        <span class="tile-go">Generate →</span>
+      </a>
+      <a class="tool-tile" href="/lint.html">
+        <span class="tile-cmd">commit linter</span>
+        <span class="tile-desc">One message in, spec violations listed out.</span>
+        <span class="tile-go">Check a message →</span>
+      </a>
+      <a class="tool-tile" href="/changelog.html">
+        <span class="tile-cmd">changelog drafts</span>
+        <span class="tile-desc">Commit subjects in, grouped CHANGELOG.md out.</span>
+        <span class="tile-go">Draft a changelog →</span>
+      </a>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p>unitdoctor.online — a static page that respects your code. No cookies, no analytics on your input.</p>
+    <p><a href="/privacy.html">privacy</a> · <a href="/terms.html">terms</a> · <a href="/cheatsheet.html">conventional commits cheat sheet</a> · <a href="/history.html">version history</a></p>
+    <p class="colophon">Handmade HTML/CSS/JS — no framework, no build step · hosted on Cloudflare Workers · last updated 2026-09-05</p>
+  </div>
+</footer>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="assets/ud-stats.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>
